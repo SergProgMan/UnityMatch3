@@ -9,6 +9,7 @@ public class Grid : MonoBehaviour {
 	public Transform ball;
 	
 	private bool findMatches = false;
+	private bool swapEffect = false; // need to be add to Swap fuction!!!
 
   static Color[] Colors = new Color[]{
 		Color.red,
@@ -163,6 +164,22 @@ public class Grid : MonoBehaviour {
 		{
 			swapEfect = false;
 		}
+		
+		
+		if (swapEffect) //go to Select
+		{
+			swapEffect = false;
+			Sphere.select = null;
+			Sphere.moveTo = null;
+		}
+		else (!swapEffect) // go to CheckMatches
+		{
+			swapEffect = false;
+			Sphere.select = null;
+			Sphere.moveTo = null;	
+		}
+		
+		
 	}
 
 
@@ -220,11 +237,14 @@ public class Grid : MonoBehaviour {
 				}
 			}
 		}
+		if(findMatches){
+			DeleteMatched();
+		}
+		else if (swapEffect){
+			Swap();
+		}	
 	
 	}
-
-
-	
 
 	public void DeleteMatched()
 	{
