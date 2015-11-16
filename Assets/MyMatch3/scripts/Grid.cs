@@ -7,6 +7,8 @@ public class Grid : MonoBehaviour {
 	public static int w = 10;
 
 	public Transform ball;
+	
+	private bool findMatches = false;
 
   static Color[] Colors = new Color[]{
 		Color.red,
@@ -164,11 +166,8 @@ public class Grid : MonoBehaviour {
 	}
 
 	public bool CheckMatch(){
-		//Check for any mistake in the board
-	//	testBoard ();
-
 		TestBoard();
-		//Get all blocks in scene
+	
 
 		Sphere [] allb = FindObjectsOfType(typeof(Sphere))as Sphere[];
 		Sphere sel = Sphere.select.gameObject.GetComponent<Sphere>();
@@ -376,100 +375,50 @@ public class Grid : MonoBehaviour {
 	}
 
 
-	public bool CheckMatchHorizontal()
+	public void CheckMatch()
 	{
-
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
 	
-		for (int y = 0; y < h; y++)
-		{
-			for (int x = 0; x < w; x++){
-
-
-
-
-				int countLeft = x+1;
-				int foundColor = board[x,y];
-				while ( countLeft < w && foundColor == board[countLeft,y])
-				{
-					countLeft++;
+		for (int y=0; y<=grid.GetLength(1); y++){
+			for (int x=0; x<=grid.GetLength(0); x++){
+				int countRight=0; //number of horizontal matches
+				while (countRight<grid.GetLength(0) && grid[x,y] == grid[x+countRight+1,y]){
+					countRight++;
 				}
-				int foundMatches = countLeft - x;
-				countLeft--;
-			//	while ( foundMatches > 2 && x <= countLeft)
-			//	{
-			//		matchBoard[x++,y] = 8;
-			//	}
-				x = countLeft;
-
-				if (foundMatches > 2){
-					for (int cd =0; cd<foundMatches;cd++){
+				if (countRight >= 2){
+					for (int i=0; i<=countRight; i++){
 						foreach(Sphere s in allS){
-							if (s.x == x-cd && s.y ==y)
-							{
-								s.scoreValue = (foundMatches-1)*50;
+							if (s.x == x+i && s.y ==y){
+								//s.scoreValue = foundMatches*50;
 								s.matched =true;
+								findMatches = true;
 							}
 						}
 					}
-					return true;
-			}
-
-
-		}
-	}
-		return false;
-	}
-
-
-	public bool CheckMatchVertical()
-	{
-		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
-
-		for (int x = 0; x < w; x++)
-		{
-			for (int y = 0; y < h; y++)
-			{
-				//start checking matches from the coordinate above
-				int countUp = y+1;
-				// store the found color so we don't get mixed up
-				int foundColor = board[x, y];
-				// matchfinding
-				while ( countUp < h && foundColor == board[x, countUp])
-				{
-					countUp++;
 				}
-				// how mych did the matchfinding loop increment countUp == number of matches
-				int foundMatches = countUp - y;
-				// matchfinding loop exits when no match is found or when out of array bounds - so decrement.
-				countUp--;
-				// if enough matches
-			//	while ( foundMatches > 2 && y <= countUp) // countUp < h done in matchfinding. no need to check y < h
-			//	{
-			//		matchBoard[x, y++] = 8;
-			//	}
-				y = countUp; // continue from last matching ball. for-loop will increment y++ next
-
-
-				if (foundMatches > 2){
-					for (int cd =0; cd<foundMatches;cd++){
-						foreach(Sphere s in allS){
-							if (s.x == x && s.y ==y-cd)
-							{
-								s.scoreValue = (foundMatches-1)*50;
-								s.matched =true;
-
+				
+				int countUp=0; //number of vertical matches
+				while (countUp<grid.GetLength(1) && grid[x,y] == grid [x, y+countUp+1]){
+					countUp++;	
+				}
+				if(countUp>=2){
+					for (int i=0; i<=countUp; i++){
+						foreach (Sphere s in allS){
+							if (s.x = x && s.y == y+i){
+							s.scoreValue = foundMatches*50;
+							s.matched =true;
+							findMatches = true;	
 							}
 						}
 					}
-					return true;
 				}
 			}
 		}
-		return false;
+	
 	}
 
 
+	
 
 	public void DeleteMatched()
 	{
