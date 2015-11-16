@@ -8,10 +8,7 @@ public class Grid : MonoBehaviour {
 
 	public Transform ball;
 
-	public static bool canCheckMatch = false;
-	public static bool swapEfect;
-
-    static Color[] Colors = new Color[]{
+  static Color[] Colors = new Color[]{
 		Color.red,
 		Color.cyan,
 		Color.green,
@@ -19,18 +16,13 @@ public class Grid : MonoBehaviour {
 		Color.yellow,
 		Color.blue,
 		Color.gray
-	//	Color.magenta
 	};
 
-	public int [,] board = new int [w,h];
-	public int [,] matchBoard = new int [w,h];
+	public int [,] grid = new int [w,h];
 	
-
 	void Start()
 	{
 		CreateBalls();
-
-
 	}
 
 
@@ -68,19 +60,16 @@ public class Grid : MonoBehaviour {
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				Transform cloneBall = (Transform)Instantiate(ball, new Vector3(x,y,0), Quaternion.identity) as Transform;
-				int foundColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
-
-				int randomColor = foundColor;
-
-				while(!MatchesOnSpawn(x,y,foundColor) && foundColor == randomColor)
+				
+				int randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
+				
+				while(MatchesOnSpawn(x,y,randomColor))
 				{
-					foundColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
-					randomColor = foundColor;
+					randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
 				}
-			
-
+				
 				cloneBall.renderer.material.color = Colors[randomColor];
-				board [x,y]=randomColor;
+				grid [x,y]=randomColor;
 				Sphere b = cloneBall.gameObject.AddComponent<Sphere>();
 				b.x = x;
 				b.y = y;
@@ -89,31 +78,21 @@ public class Grid : MonoBehaviour {
 		}
 	}
 
-	public bool MatchesOnSpawn (int x,int y, int foundColor)
+	public bool MatchesOnSpawn (int x, int y, int randomColor) //checking matching on spawn
 	{
-		int countLeft = x-1;
-		while ( countLeft >=0 && foundColor == board[countLeft,y])
-		{
-			countLeft--;
-		}			
-		int foundMatchesLeft = x-countLeft;
-		if (foundMatchesLeft>2)
-		{
-			return false;
+		if (x-2>=0){
+			if (grid[x-1,y]==randomColor && grid[x-2,y]==randomColor ){
+			return true;
+			}
 		}
 		
-		int countDown = y-1;
-		while ( countDown >=0 && foundColor == board[x,countDown])
-		{
-			countDown--;
-		}			
-		int foundMatchesDown = y-countDown;
-		if (foundMatchesDown>2)
-		{
-			return false;
+		if (y-2>=0){
+			if(grid[x-2,y]==randomColor && grid[x,y-2]==randomColor){
+				return true;
+			}
 		}
 		
-		return true;
+		return false;
 	}
 
 	bool CheckIfNear()
@@ -131,9 +110,9 @@ public class Grid : MonoBehaviour {
 		Debug.Log ("What are you trying to select?");
 		return false;
 	}
+	
 	IEnumerator Swap(bool match3)
 	{
-
 		Sphere sel = Sphere.select.gameObject.GetComponent<Sphere>();
 		Sphere mov = Sphere.moveTo.gameObject.GetComponent<Sphere>();
 
@@ -144,8 +123,8 @@ public class Grid : MonoBehaviour {
 		while (time<1)
 		{
 			time+=Time.deltaTime*5;
-			sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, time);
-			mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, time);
+			sel.transform.position = Vector3.SLerp(selTempPos, movTempPos, time);
+			mov.transform.position = Vector3.SLerp(movTempPos, selTempPos, time);
 			yield return null;
 		}
 
