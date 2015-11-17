@@ -2,16 +2,28 @@
 using System.Collections;
 
 public class Grid : MonoBehaviour {
-
+	
 	public static int h = 12;
 	public static int w = 10;
+	
+	public int [,] grid = new int [w,h];
 
 	public Transform ball;
 	
 	private bool findMatches = false;
 	private bool swapEffect = false; // need to be add to Swap fuction!!!
 
-  static Color[] Colors = new Color[]{
+	public enum State{
+		GenerateGrid,
+		Select,
+		Swap,
+		CheckMatches,
+		DeleteMatched,
+		MoveDown,
+		Respawn
+	};
+
+	 static Color[] Colors = new Color[]{
 		Color.red,
 		Color.cyan,
 		Color.green,
@@ -21,45 +33,54 @@ public class Grid : MonoBehaviour {
 		Color.gray
 	};
 
-	public int [,] grid = new int [w,h];
+	public State activeState;
 	
-	void Start()
-	{
-		CreateBalls();
+	
+	void Start(){
+		State activeState = State.GenerateGrid
 	}
 
-
-	void FixedUpdate()
-	{
-		CheckMatchAfterSpawn();
-
-		    
-		if(Sphere.select && Sphere.moveTo)
-		{
-			if(CheckIfNear()==true)
-			{
-
-				if (!swapEfect)
-				{
-					swapEfect = true;
-					StartCoroutine(Swap(true));
-				}
-			}
-				
+	void Update(){
+		RunEngine();
+	}
+	
+	void RunEngine(){
+		switch(activeState){
+			case State.GenerateGrid:
+			GenerateGrid();
+			break;
 			
-			else 
-				{
-				Sphere.select = null;
-				Sphere.moveTo = null;
-				}
+			case State.Select:
+			Select();
+			break;
+			
+			case State.Swap:
+			Swap();
+			break;
+			
+			case State.CheckMatches:
+			CheckMatches();
+			break;
+			
+			case State.DeleteMatched:
+			DeleteMatched();
+			break;
+			
+			case State.MoveDown:
+			MoveDown();
+			break;
+			
+			case Sate.Respawn:
+			Respawn();
+			break;
 		}
-
-
 	}
-
-
-	public void CreateBalls()
-	{
+	
+	void SwitchState (State nextState){
+		activeState = nextState;
+	}
+	
+	void GenerateGrid(){
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				Transform cloneBall = (Transform)Instantiate(ball, new Vector3(x,y,0), Quaternion.identity) as Transform;
@@ -79,9 +100,10 @@ public class Grid : MonoBehaviour {
 				b.ID = randomColor;
 			}
 		}
+		SwitchState(State.Select);
 	}
 
-	public bool MatchesOnSpawn (int x, int y, int randomColor) //checking matching on spawn
+	bool MatchesOnSpawn (int x, int y, int randomColor) //check matching on spawn
 	{
 		if (x-2>=0){
 			if (grid[x-1,y]==randomColor && grid[x-2,y]==randomColor ){
@@ -114,23 +136,32 @@ public class Grid : MonoBehaviour {
 		return false;
 	}
 	
-	IEnumerator Swap(bool match3)
-	{
+	void Select(){
+		if(Sphere.select && Sphere.moveTo){
+			if(CheckIfNear){
+				SwitchState(Swap);
+			}
+			else{
+				Sphere.select = null;
+				Sphere.moveTo = null;
+			}
+		}
+	}
+	
+	void Swap(){
 		Sphere sel = Sphere.select.gameObject.GetComponent<Sphere>();
 		Sphere mov = Sphere.moveTo.gameObject.GetComponent<Sphere>();
 
 		Vector3 selTempPos = sel.transform.position;
 		Vector3 movTempPos = mov.transform.position;
+		
 		float time = 0;
-
-		while (time<1)
-		{
+		while (time<1){
 			time+=Time.deltaTime*5;
 			sel.transform.position = Vector3.SLerp(selTempPos, movTempPos, time);
 			mov.transform.position = Vector3.SLerp(movTempPos, selTempPos, time);
-			yield return null;
-		}
-
+		}   
+		
 		int tempX = sel.x;
 		int tempY = sel.y;
 
@@ -140,65 +171,22 @@ public class Grid : MonoBehaviour {
 		mov.x = tempX;
 		mov.y = tempY;
 
-		board[sel.x,sel.y]=sel.ID;
-		board[mov.x,mov.y]=mov.ID;
-
-		if (match3 == true)
-		{
-			if (CheckMatch() == true)
-			{
-				swapEfect = false;
-				Sphere.select = null;
-				Sphere.moveTo = null;
-			}
-
-			else 
-			{
-				StartCoroutine(Swap(false));
-				Sphere.select = null;
-				Sphere.moveTo = null;
-
-			}
-		}
-		else 
-		{
-			swapEfect = false;
-		}
-		
-		
-		if (swapEffect) //go to Select
-		{
+		grid[sel.x,sel.y]=sel.ID;
+		grid[mov.x,mov.y]=mov.ID;
+	
+		if (swapEffect){
 			swapEffect = false;
 			Sphere.select = null;
 			Sphere.moveTo = null;
+			SwitchState(Select);
 		}
-		else (!swapEffect) // go to CheckMatches
-		{
-			swapEffect = false;
-			Sphere.select = null;
-			Sphere.moveTo = null;	
-		}
-		
-		
-	}
-
-
-
-	public void CheckMatchAfterSpawn()
-	{
-		if(canCheckMatch)
-		{
-			TestBoard();
-
-		if (CheckMatchHorizontal() | CheckMatchVertical())
-		{
-			DeleteMatched();
-		}
+		else (!swapEffect){
+			swapEffect = true;
+			SwitchState(CheckMatches);
 		}
 	}
 
-
-	public void CheckMatch()
+	void CheckMatch()
 	{
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
 	
@@ -221,14 +209,14 @@ public class Grid : MonoBehaviour {
 				}
 				
 				int countUp=0; //number of vertical matches
-				while (countUp<grid.GetLength(1) && grid[x,y] == grid [x, y+countUp+1]){
+				while (countUp<grid.GetLength(1) && grid[x,y] == grid[x,y+countUp+1]){
 					countUp++;	
 				}
 				if(countUp>=2){
 					for (int i=0; i<=countUp; i++){
 						foreach (Sphere s in allS){
 							if (s.x = x && s.y == y+i){
-							s.scoreValue = foundMatches*50;
+							//s.scoreValue = foundMatches*50;
 							s.matched =true;
 							findMatches = true;	
 							}
@@ -237,35 +225,37 @@ public class Grid : MonoBehaviour {
 				}
 			}
 		}
+		
 		if(findMatches){
-			DeleteMatched();
+			SwitchState(DeleteMatched;
 		}
 		else if (swapEffect){
-			Swap();
-		}	
+			SwitchState(Swap);
+		}
+		else if (!swapEffect){
+			Sphere.select = null;
+			Sphere.moveTo = null;
+			SwitchState(Select);
+		}
 	
 	}
 
-	public void DeleteMatched()
-	{
+	void DeleteMatched(){
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
-		foreach (Sphere s in allS)
-		{
-			if (s.matched)
-			{
-				board [s.x,s.y] = 77;
+		foreach (Sphere s in allS){
+			if (s.matched){
+				grid [s.x,s.y] = 777;
 				s.StartCoroutine(s.DestroyBlock());
 			}
 		}
-		MoveY ();
+		MoveDown ();
 	}
 
-	public void MoveY ()
+	void MoveDown ()
 	{
-		canCheckMatch =false;
-
+	
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
-		int moveDownY = 0;
+		int moveDown = 0;
 		for (int x=0; x<w; x++)
 		{
 			for (int y=h-1; y>=0; y--)
@@ -282,7 +272,7 @@ public class Grid : MonoBehaviour {
 
 						}
 					}
-					moveDownY ++;
+					moveDown ++;
 
 				}
 			}
@@ -290,7 +280,7 @@ public class Grid : MonoBehaviour {
 			foreach (Sphere s in allS)
 			{
 				if (s.readyToMove){
-					s.StartCoroutine(s.MoveDown(moveDownY));
+					s.StartCoroutine(s.MoveDown(moveDown));
 					s.readyToMove =false;
 					canCheckMatch =true;
 					board[s.x,s.y] = s.ID;
@@ -299,24 +289,17 @@ public class Grid : MonoBehaviour {
 				}
 
 			}
-			MarkEmpty(x, moveDownY);
+			MarkEmpty(x, moveDown);
 
-			moveDownY = 0;
+			moveDown = 0;
 
 
 		}
 		Respawn();
-
-	//	CheckMatchAfterSpawn();
-
 	}
-
-
-
-	public void MarkEmpty (int x, int downY)
-	{
-		for (int i=0; i<downY; i++)
-		{
+	
+	void MarkEmpty (int x, int downY){
+		for (int i=0; i<downY; i++){
 			board [x, h-1-i] = 77;
 			matchBoard [x, h-1-i] = downY;
 
@@ -324,8 +307,7 @@ public class Grid : MonoBehaviour {
 
 	}
 
-	public void TestBoard()
-	{
+	void TestBoard(){
 
 
 		Sphere[] allb = FindObjectsOfType(typeof(Sphere)) as Sphere[];
@@ -343,7 +325,7 @@ public class Grid : MonoBehaviour {
 	}
 
 
-	public void Respawn(){
+	void Respawn(){
 
 		canCheckMatch =false;
 
@@ -366,7 +348,7 @@ public class Grid : MonoBehaviour {
 		}
 	}
 
-	public void PrintField()
+	void PrintField()
 	{
 		string str = "";
 		int i, j;
