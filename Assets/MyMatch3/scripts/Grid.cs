@@ -35,7 +35,6 @@ public class Grid : MonoBehaviour {
 
 	public State activeState;
 	
-	
 	void Start(){
 		State activeState = State.GenerateGrid
 	}
@@ -139,7 +138,7 @@ public class Grid : MonoBehaviour {
 	void Select(){
 		if(Sphere.select && Sphere.moveTo){
 			if(CheckIfNear){
-				SwitchState(Swap);
+				SwitchState(State.Swap);
 			}
 			else{
 				Sphere.select = null;
@@ -182,7 +181,7 @@ public class Grid : MonoBehaviour {
 		}
 		else (!swapEffect){
 			swapEffect = true;
-			SwitchState(CheckMatches);
+			SwitchState(State.CheckMatches);
 		}
 	}
 
@@ -190,8 +189,8 @@ public class Grid : MonoBehaviour {
 	{
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
 	
-		for (int y=0; y<=grid.GetLength(1); y++){
-			for (int x=0; x<=grid.GetLength(0); x++){
+		for (int y=0; y<grid.GetLength(1); y++){
+			for (int x=0; x<grid.GetLength(0); x++){
 				int countRight=0; //number of horizontal matches
 				while (countRight<grid.GetLength(0) && grid[x,y] == grid[x+countRight+1,y]){
 					countRight++;
@@ -227,15 +226,15 @@ public class Grid : MonoBehaviour {
 		}
 		
 		if(findMatches){
-			SwitchState(DeleteMatched;
+			SwitchState(State.DeleteMatched);
 		}
 		else if (swapEffect){
-			SwitchState(Swap);
+			SwitchState(State.Swap);
 		}
 		else if (!swapEffect){
 			Sphere.select = null;
 			Sphere.moveTo = null;
-			SwitchState(Select);
+			SwitchState(State.Select);
 		}
 	
 	}
@@ -248,68 +247,60 @@ public class Grid : MonoBehaviour {
 				s.StartCoroutine(s.DestroyBlock());
 			}
 		}
-		MoveDown ();
+		SwitchState(MoveDown);
 	}
 
-	void MoveDown ()
-	{
-	
+	void MoveDown (){
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
-		int moveDown = 0;
-		for (int x=0; x<w; x++)
-		{
-			for (int y=h-1; y>=0; y--)
-			{
-				if (board[x,y]==77)
-				{
+		for (int x=0; x<w; x++){
+			for (int y=h-1; y>=0; y--){
+				if (grid[x,y] == 777){
 					canCheckMatch = false;
-					foreach (Sphere b in allS)
-					{
-						if(b.x==x && b.y > y)
-						{
-							b.y -=1;
-							b.readyToMove = true;
-
+					foreach (Sphere s in allS){
+						if(s.x==x && s.y > y){
+							s.readyToMove = true;
+							s.moveDown ++;
 						}
 					}
-					moveDown ++;
-
 				}
 			}
-
-			foreach (Sphere s in allS)
-			{
-				if (s.readyToMove){
-					s.StartCoroutine(s.MoveDown(moveDown));
-					s.readyToMove =false;
-					canCheckMatch =true;
-					board[s.x,s.y] = s.ID;
-
-
-				}
-
-			}
-			MarkEmpty(x, moveDown);
-
-			moveDown = 0;
-
-
 		}
-		Respawn();
+		foreach (Sphere s in allS){
+			if (s.readyToMove){
+				s.StartCoroutine(s.MoveDown(moveDown));
+				s.y -= s.moveDown
+				board[s.x,s.y] = s.ID;
+				for (int i=0; i< s.moveDown; i++){
+					grid[s.x,grid.GetLength(1) -1 - i]=777;
+				}
+				s.moveDown = 0;
+				s.readyToMove =false;
+			}
+		}
+		SwitchState(State.Respawn);
 	}
 	
-	void MarkEmpty (int x, int downY){
-		for (int i=0; i<downY; i++){
-			board [x, h-1-i] = 77;
-			matchBoard [x, h-1-i] = downY;
-
+	void Respawn(){
+		for (int x=0; x<grid.GetLength(0); x++){
+			for (int y=0; y<grid.GetLength(1); y++){
+				if (grid[x,y]==777){
+					Transform cloneBall = (Transform)Instantiate(ball, new Vector3(x,y,0), Quaternion.identity) as Transform;
+					int randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
+					cloneBall.renderer.material.color = Colors[randomColor];
+					grid [x,y]=randomColor;
+					Sphere b = cloneBall.gameObject.AddComponent<Sphere>();
+					b.x = x;
+					b.y = y;
+					b.ID = randomColor;
+				//	b.fallEfect = true;
+				//	b.dY = matchBoard[x,y];
+				}
+			}
 		}
-
+		SwitchState(State.CheckMatches)
 	}
 
 	void TestBoard(){
-
-
 		Sphere[] allb = FindObjectsOfType(typeof(Sphere)) as Sphere[];
 		for(int x=0; x<board.GetLength(0); x++){
 			for(int y=0; y<board.GetLength(1); y++){
@@ -325,28 +316,7 @@ public class Grid : MonoBehaviour {
 	}
 
 
-	void Respawn(){
 
-		canCheckMatch =false;
-
-		for (int x=0; x<board.GetLength(0); x++){
-			for (int y=0; y<board.GetLength(1); y++){
-				if (board[x,y]==77){
-					Transform cloneBall = (Transform)Instantiate(ball, new Vector3(x,y,0), Quaternion.identity) as Transform;
-					int randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
-					cloneBall.renderer.material.color = Colors[randomColor];
-					board [x,y]=randomColor;
-					Sphere b = cloneBall.gameObject.AddComponent<Sphere>();
-					b.x = x;
-					b.y = y;
-					b.ID = randomColor;
-					b.fallEfect = true;
-					b.dY = matchBoard[x,y];
-
-				}
-			}
-		}
-	}
 
 	void PrintField()
 	{
