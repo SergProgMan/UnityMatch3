@@ -297,7 +297,7 @@ public class Grid : MonoBehaviour {
 				}
 			}
 		}
-		SwitchState(State.CheckMatches)
+		SwitchState(State.CheckMatches);
 	}
 
 	void TestBoard(){
