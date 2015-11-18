@@ -11,9 +11,6 @@ public class Sphere : MonoBehaviour {
 	public int scoreValue;
 
 	public bool matched;
-	
-	public bool readyToMove;
-	public bool fallEfect;
 
 	private Vector3 myScale;
 
@@ -22,11 +19,7 @@ public class Sphere : MonoBehaviour {
 	
 	void Start(){
 		myScale = transform.localScale;
-		
-		if (fallEfect){
-			StartCoroutine ("FallDown");
-			fallEfect = false;
-		}
+		//StartCoroutine ("FallDown");
 	}
 
 	void Update (){
@@ -50,9 +43,9 @@ public class Sphere : MonoBehaviour {
 		transform.localScale = myScale;
 	}
 
-	public IEnumerator MoveDown (int downY){
+	public IEnumerator MoveDown (){
 		Vector3 correctPosition = transform.position;
-		Vector3 newPosition = new Vector3 (transform.position.x, transform.position.y - downY, transform.position.z);
+		Vector3 newPosition = new Vector3 (transform.position.x, transform.position.y - moveDown, transform.position.z);
 	
 		float time  = 0;
 
@@ -61,8 +54,6 @@ public class Sphere : MonoBehaviour {
 			transform.position = Vector3.Lerp (correctPosition, newPosition, time);
 			yield return null;
 		}
-
-		readyToMove =false;
 	}
 
 	public IEnumerator FallDown (){
@@ -93,10 +84,11 @@ public class Sphere : MonoBehaviour {
 		Destroy (gameObject);
 	}
 	
-	public void CheckPlace(){
+/*	public void CheckPlace(){
 		Vector3 dPos = transform.position;
 		Vector3 cPos= new Vector3(x,y,0);
 		transform.position = Vector3.Lerp (dPos,cPos,1);
 	}
+	*/
 }
 
