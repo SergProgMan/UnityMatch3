@@ -199,7 +199,7 @@ public class Grid : MonoBehaviour {
 					for (int i=0; i<=countRight; i++){
 						foreach(Sphere s in allS){
 							if (s.x == x+i && s.y ==y){
-								//s.scoreValue = foundMatches*50;
+								//s.scoreValue = countRight*50;
 								s.matched =true;
 								findMatches = true;
 							}
@@ -215,7 +215,7 @@ public class Grid : MonoBehaviour {
 					for (int i=0; i<=countUp; i++){
 						foreach (Sphere s in allS){
 							if (s.x == x && s.y == y+i){
-							//s.scoreValue = foundMatches*50;
+							//s.scoreValue = countUp*50;
 							s.matched =true;
 							findMatches = true;	
 							}
@@ -266,14 +266,13 @@ public class Grid : MonoBehaviour {
 		}
 		foreach (Sphere s in allS){
 			if (s.readyToMove){
-				//s.StartCoroutine(s.MoveDown(moveDown));
+				s.StartCoroutine(s.MoveDown());
 				s.y -= s.moveDown;
 				grid[s.x,s.y] = s.ID;
 				for (int i=0; i< s.moveDown; i++){
 					grid[s.x,grid.GetLength(1) -1 - i]=777;
 				}
 				s.moveDown = 0;
-				s.readyToMove =false;
 			}
 		}
 		SwitchState(State.Respawn);
