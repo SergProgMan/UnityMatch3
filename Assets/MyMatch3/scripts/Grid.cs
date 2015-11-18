@@ -36,7 +36,7 @@ public class Grid : MonoBehaviour {
 	public State activeState;
 	
 	void Start(){
-		State activeState = State.GenerateGrid
+		State activeState = State.GenerateGrid;
 	}
 
 	void Update(){
@@ -69,7 +69,7 @@ public class Grid : MonoBehaviour {
 			MoveDown();
 			break;
 			
-			case Sate.Respawn:
+			case State.Respawn:
 			Respawn();
 			break;
 		}
@@ -91,7 +91,7 @@ public class Grid : MonoBehaviour {
 					randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
 				}
 				
-				cloneBall.renderer.material.color = Colors[randomColor];
+				cloneBall.GetComponent<Renderer>().material.color = Colors[randomColor];
 				grid [x,y]=randomColor;
 				Sphere b = cloneBall.gameObject.AddComponent<Sphere>();
 				b.x = x;
@@ -137,7 +137,7 @@ public class Grid : MonoBehaviour {
 	
 	void Select(){
 		if(Sphere.select && Sphere.moveTo){
-			if(CheckIfNear){
+			if(CheckIfNear()){
 				SwitchState(State.Swap);
 			}
 			else{
@@ -157,8 +157,8 @@ public class Grid : MonoBehaviour {
 		float time = 0;
 		while (time<1){
 			time+=Time.deltaTime*5;
-			sel.transform.position = Vector3.SLerp(selTempPos, movTempPos, time);
-			mov.transform.position = Vector3.SLerp(movTempPos, selTempPos, time);
+			sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, time);
+			mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, time);
 		}   
 		
 		int tempX = sel.x;
@@ -177,15 +177,15 @@ public class Grid : MonoBehaviour {
 			swapEffect = false;
 			Sphere.select = null;
 			Sphere.moveTo = null;
-			SwitchState(Select);
+			SwitchState(State.Select);
 		}
-		else (!swapEffect){
+		else if (!swapEffect){
 			swapEffect = true;
 			SwitchState(State.CheckMatches);
 		}
 	}
 
-	void CheckMatch()
+	void CheckMatches()
 	{
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
 	
@@ -214,7 +214,7 @@ public class Grid : MonoBehaviour {
 				if(countUp>=2){
 					for (int i=0; i<=countUp; i++){
 						foreach (Sphere s in allS){
-							if (s.x = x && s.y == y+i){
+							if (s.x == x && s.y == y+i){
 							//s.scoreValue = foundMatches*50;
 							s.matched =true;
 							findMatches = true;	
@@ -247,7 +247,7 @@ public class Grid : MonoBehaviour {
 				s.StartCoroutine(s.DestroyBlock());
 			}
 		}
-		SwitchState(MoveDown);
+		SwitchState(State.MoveDown);
 	}
 
 	void MoveDown (){
@@ -255,7 +255,6 @@ public class Grid : MonoBehaviour {
 		for (int x=0; x<w; x++){
 			for (int y=h-1; y>=0; y--){
 				if (grid[x,y] == 777){
-					canCheckMatch = false;
 					foreach (Sphere s in allS){
 						if(s.x==x && s.y > y){
 							s.readyToMove = true;
@@ -267,9 +266,9 @@ public class Grid : MonoBehaviour {
 		}
 		foreach (Sphere s in allS){
 			if (s.readyToMove){
-				s.StartCoroutine(s.MoveDown(moveDown));
-				s.y -= s.moveDown
-				board[s.x,s.y] = s.ID;
+				//s.StartCoroutine(s.MoveDown(moveDown));
+				s.y -= s.moveDown;
+				grid[s.x,s.y] = s.ID;
 				for (int i=0; i< s.moveDown; i++){
 					grid[s.x,grid.GetLength(1) -1 - i]=777;
 				}
@@ -286,7 +285,7 @@ public class Grid : MonoBehaviour {
 				if (grid[x,y]==777){
 					Transform cloneBall = (Transform)Instantiate(ball, new Vector3(x,y,0), Quaternion.identity) as Transform;
 					int randomColor = Mathf.RoundToInt(Random.Range(0,Colors.Length));
-					cloneBall.renderer.material.color = Colors[randomColor];
+					cloneBall.GetComponent<Renderer>().material.color = Colors[randomColor];
 					grid [x,y]=randomColor;
 					Sphere b = cloneBall.gameObject.AddComponent<Sphere>();
 					b.x = x;
@@ -302,12 +301,12 @@ public class Grid : MonoBehaviour {
 
 	void TestBoard(){
 		Sphere[] allb = FindObjectsOfType(typeof(Sphere)) as Sphere[];
-		for(int x=0; x<board.GetLength(0); x++){
-			for(int y=0; y<board.GetLength(1); y++){
+		for(int x=0; x<grid.GetLength(0); x++){
+			for(int y=0; y<grid.GetLength(1); y++){
 				foreach(Sphere b in allb){
 					if(b.x == x && b.y ==y){
-						if(board[x,y]!=b.ID){//Found a mistake
-							board[x,y] = b.ID;//Fix the mistake
+						if(grid[x,y]!=b.ID){//Found a mistake
+							grid[x,y] = b.ID;//Fix the mistake
 						}
 					}
 				}
@@ -325,7 +324,7 @@ public class Grid : MonoBehaviour {
 		for (j = h - 1; j >= 0; j--)
 		{
 			for (i = 0; i <w; i++)
-				str += " " + board [i, j];
+				str += " " + grid [i, j];
 			str += "\n";
 		}
 		Debug.Log(str);
