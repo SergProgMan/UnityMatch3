@@ -36,7 +36,7 @@ public class Grid : MonoBehaviour {
 	public State activeState;
 	
 	void Start(){
-		State activeState = State.GenerateGrid;
+		activeState = State.GenerateGrid;
 	}
 
 	void Update(){
@@ -77,6 +77,7 @@ public class Grid : MonoBehaviour {
 	
 	void SwitchState (State nextState){
 		activeState = nextState;
+		RunEngine ();
 	}
 	
 	void GenerateGrid(){
@@ -111,7 +112,7 @@ public class Grid : MonoBehaviour {
 		}
 		
 		if (y-2>=0){
-			if(grid[x-2,y]==randomColor && grid[x,y-2]==randomColor){
+			if(grid[x,y-1]==randomColor && grid[x,y-2]==randomColor){
 				return true;
 			}
 		}
@@ -191,12 +192,13 @@ public class Grid : MonoBehaviour {
 	
 		for (int y=0; y<grid.GetLength(1); y++){
 			for (int x=0; x<grid.GetLength(0); x++){
-				int countRight=0; //number of horizontal matches
-				while (countRight<grid.GetLength(0) && grid[x,y] == grid[x+countRight+1,y]){
+				int countRight=x+1; //number of horizontal matches
+				while (countRight<grid.GetLength(0) && grid[x,y] == grid[countRight,y]){
 					countRight++;
 				}
-				if (countRight >= 2){
-					for (int i=0; i<=countRight; i++){
+				int foundMatchesX = countRight - x;
+				if (foundMatchesX > 2){
+					for (int i=0; i<foundMatchesX; i++){
 						foreach(Sphere s in allS){
 							if (s.x == x+i && s.y ==y){
 								//s.scoreValue = countRight*50;
@@ -207,12 +209,13 @@ public class Grid : MonoBehaviour {
 					}
 				}
 				
-				int countUp=0; //number of vertical matches
-				while (countUp<grid.GetLength(1) && grid[x,y] == grid[x,y+countUp+1]){
+				int countUp = y + 1; //number of vertical matches
+				while (countUp<grid.GetLength(1) && grid[x,y] == grid[x,countUp]){
 					countUp++;	
 				}
-				if(countUp>=2){
-					for (int i=0; i<=countUp; i++){
+				int foundMatchesY = countUp - y;
+				if(foundMatchesY>2){
+					for (int i=0; i<foundMatchesY; i++){
 						foreach (Sphere s in allS){
 							if (s.x == x && s.y == y+i){
 							//s.scoreValue = countUp*50;
@@ -252,8 +255,8 @@ public class Grid : MonoBehaviour {
 
 	void MoveDown (){
 		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
-		for (int x=0; x<w; x++){
-			for (int y=h-1; y>=0; y--){
+		for (int x=0; x<grid.GetLength(0); x++){
+			for (int y=0; y<grid.GetLength(1); y++){
 				if (grid[x,y] == 777){
 					foreach (Sphere s in allS){
 						if(s.x==x && s.y > y){
@@ -273,6 +276,7 @@ public class Grid : MonoBehaviour {
 					grid[s.x,grid.GetLength(1) -1 - i]=777;
 				}
 				s.moveDown = 0;
+				s.readyToMove = false;
 			}
 		}
 		SwitchState(State.Respawn);

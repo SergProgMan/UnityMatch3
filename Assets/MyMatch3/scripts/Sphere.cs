@@ -11,6 +11,7 @@ public class Sphere : MonoBehaviour {
 	public int scoreValue;
 
 	public bool matched;
+	public bool readyToMove;
 
 	private Vector3 myScale;
 
@@ -56,7 +57,7 @@ public class Sphere : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator FallDown (){
+	/*public IEnumerator FallDown (){
 		Vector3 newPosition = transform.position;
 		Vector3 correctPosition = new Vector3 (transform.position.x, transform.position.y+dY, transform.position.z);
 		float time = 0;
@@ -66,7 +67,7 @@ public class Sphere : MonoBehaviour {
 			transform.position= Vector3.Lerp (correctPosition, newPosition, time);
 			yield return null;
 		}
-	}
+	}*/
 
 	public IEnumerator DestroyBlock(){
 		
