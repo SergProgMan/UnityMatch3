@@ -20,7 +20,9 @@ public class Grid : MonoBehaviour {
 		CheckMatches,
 		DeleteMatched,
 		MoveDown,
-		Respawn
+		Respawn,
+		
+		Debug //for debugging
 	};
 
 	 static Color[] Colors = new Color[]{
@@ -33,10 +35,13 @@ public class Grid : MonoBehaviour {
 		Color.gray
 	};
 
-	public State activeState;
+	State activeState;
+	State debugState; // for debugging
+	
 	
 	void Start(){
-		activeState = State.GenerateGrid;
+	//	activeState = State.GenerateGrid;
+	activeState = State.Debug;
 	}
 
 	void Update(){
@@ -72,12 +77,34 @@ public class Grid : MonoBehaviour {
 			case State.Respawn:
 			Respawn();
 			break;
+			
+			case State.Debug:
+			Debug();
+			break;
 		}
 	}
 	
 	void SwitchState (State nextState){
-		activeState = nextState;
-		RunEngine ();
+		//activeState = nextState;
+	
+		debugState = nextState;
+		activeState = StateDebug;
+		
+		RunEngine ();	
+	}
+	
+	void Debug(){
+		if(activeState == null){
+			nextState = State.GenerateGrid;
+		}
+		Debug.Log("activeState " +activeState);
+		Debug.Log("nextState " +nextState);
+		PrintField();
+		Debug.Log("<color=red>press space key");
+		if (Input.GetKeyDown("space")){
+			activeState = nextState;
+			RunEngine ();
+		}
 	}
 	
 	void GenerateGrid(){
@@ -101,6 +128,7 @@ public class Grid : MonoBehaviour {
 			}
 		}
 		SwitchState(State.Select);
+		
 	}
 
 	bool MatchesOnSpawn (int x, int y, int randomColor) //check matching on spawn
