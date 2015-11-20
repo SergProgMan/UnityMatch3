@@ -22,7 +22,7 @@ public class Grid : MonoBehaviour {
 		MoveDown,
 		Respawn,
 		
-		Debug //for debugging
+		Debugging //for debugging
 	};
 
 	 static Color[] Colors = new Color[]{
@@ -36,12 +36,13 @@ public class Grid : MonoBehaviour {
 	};
 
 	State activeState;
-	State debugState; // for debugging
+	State debuggingState; // for debugging
 	
 	
 	void Start(){
-	//	activeState = State.GenerateGrid;
-	activeState = State.Debug;
+	//activeState = State.GenerateGrid;
+	//activeState = State.Debugging;
+		SwitchState(State.GenerateGrid);
 	}
 
 	void Update(){
@@ -78,8 +79,8 @@ public class Grid : MonoBehaviour {
 			Respawn();
 			break;
 			
-			case State.Debug:
-			Debug();
+			case State.Debugging:
+			Debugging();
 			break;
 		}
 	}
@@ -87,22 +88,19 @@ public class Grid : MonoBehaviour {
 	void SwitchState (State nextState){
 		//activeState = nextState;
 	
-		debugState = nextState;
-		activeState = StateDebug;
+		debuggingState = nextState;
+		activeState = State.Debugging;
 		
 		RunEngine ();	
 	}
 	
-	void Debug(){
-		if(activeState == null){
-			nextState = State.GenerateGrid;
-		}
+	void Debugging(){
 		Debug.Log("activeState " +activeState);
-		Debug.Log("nextState " +nextState);
+		Debug.Log("nextState " +debuggingState);
 		PrintField();
 		Debug.Log("<color=red>press space key");
 		if (Input.GetKeyDown("space")){
-			activeState = nextState;
+			activeState = debuggingState;
 			RunEngine ();
 		}
 	}
