@@ -38,11 +38,8 @@ public class Grid : MonoBehaviour {
 	State activeState;
 	State debuggingState; // for debugging
 	
-	
 	void Start(){
-	//activeState = State.GenerateGrid;
-	//activeState = State.Debugging;
-		SwitchState(State.GenerateGrid);
+	activeState = State.GenerateGrid;
 	}
 
 	void Update(){
@@ -90,8 +87,6 @@ public class Grid : MonoBehaviour {
 	
 		debuggingState = nextState;
 		activeState = State.Debugging;
-		
-		RunEngine ();	
 	}
 	
 	void Debugging(){
@@ -101,7 +96,6 @@ public class Grid : MonoBehaviour {
 		Debug.Log("<color=red>press space key");
 		if (Input.GetKeyDown("space")){
 			activeState = debuggingState;
-			RunEngine ();
 		}
 	}
 	
@@ -126,7 +120,6 @@ public class Grid : MonoBehaviour {
 			}
 		}
 		SwitchState(State.Select);
-		
 	}
 
 	bool MatchesOnSpawn (int x, int y, int randomColor) //check matching on spawn
@@ -142,7 +135,6 @@ public class Grid : MonoBehaviour {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -261,11 +253,8 @@ public class Grid : MonoBehaviour {
 			SwitchState(State.Swap);
 		}
 		else if (!swapEffect){
-			Sphere.select = null;
-			Sphere.moveTo = null;
 			SwitchState(State.Select);
 		}
-	
 	}
 
 	void DeleteMatched(){
