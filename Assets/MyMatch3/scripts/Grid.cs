@@ -36,8 +36,7 @@ public class Grid : MonoBehaviour {
 	};
 
 	State activeState;
-	State debuggingState; // for debugging
-	
+		
 	void Start(){
 	activeState = State.GenerateGrid;
 	}
@@ -75,28 +74,22 @@ public class Grid : MonoBehaviour {
 			case State.Respawn:
 			Respawn();
 			break;
-			
-			case State.Debugging:
-			Debugging();
-			break;
+
 		}
 	}
 	
 	void SwitchState (State nextState){
 		//activeState = nextState;
 	
-		debuggingState = nextState;
-		activeState = State.Debugging;
+		Debugging(nextState);
 	}
 	
-	void Debugging(){
+	void Debugging(State nextState){
 		Debug.Log("activeState " +activeState);
-		Debug.Log("nextState " +debuggingState);
+		Debug.Log("nextState " +nextState);
 		PrintField();
-		Debug.Log("<color=red>press space key");
-		if (Input.GetKeyDown("space")){
-			activeState = debuggingState;
-		}
+		//Debug.Break();
+		activeState = nextState;
 	}
 	
 	void GenerateGrid(){
@@ -172,13 +165,10 @@ public class Grid : MonoBehaviour {
 
 		Vector3 selTempPos = sel.transform.position;
 		Vector3 movTempPos = mov.transform.position;
-		
-		float time = 0;
-		while (time<1){
-			time+=Time.deltaTime*5;
-			sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, time);
-			mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, time);
-		}   
+
+		sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, 1);
+		mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, 1);
+		  
 		
 		int tempX = sel.x;
 		int tempY = sel.y;
@@ -247,12 +237,18 @@ public class Grid : MonoBehaviour {
 		}
 		
 		if(findMatches){
+			findMatches = false;
+			swapEffect = false;
+			Sphere.select = null;
+			Sphere.moveTo = null;
 			SwitchState(State.DeleteMatched);
 		}
 		else if (swapEffect){
 			SwitchState(State.Swap);
 		}
 		else if (!swapEffect){
+			Sphere.select = null;
+			Sphere.moveTo = null;
 			SwitchState(State.Select);
 		}
 	}
@@ -262,7 +258,8 @@ public class Grid : MonoBehaviour {
 		foreach (Sphere s in allS){
 			if (s.matched){
 				grid [s.x,s.y] = 777;
-				s.StartCoroutine(s.DestroyBlock());
+				s.DestroyBall();
+			//	s.StartCoroutine(s.DestroyBlock());
 			}
 		}
 		SwitchState(State.MoveDown);
@@ -284,7 +281,8 @@ public class Grid : MonoBehaviour {
 		}
 		foreach (Sphere s in allS){
 			if (s.readyToMove){
-				s.StartCoroutine(s.MoveDown());
+				//s.StartCoroutine(s.MoveDown());
+				s.MoveByY();
 				s.y -= s.moveDown;
 				grid[s.x,s.y] = s.ID;
 				for (int i=0; i< s.moveDown; i++){

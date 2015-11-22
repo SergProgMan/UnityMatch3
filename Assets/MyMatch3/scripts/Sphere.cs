@@ -7,7 +7,7 @@ public class Sphere : MonoBehaviour {
 	public int x;
 	public int y;
 
-	public int moveDown;
+	public int moveDown = 0;
 	public int scoreValue;
 
 	public bool matched;
@@ -44,18 +44,24 @@ public class Sphere : MonoBehaviour {
 		transform.localScale = myScale;
 	}
 
-	public IEnumerator MoveDown (){
+	public void MoveByY(){
 		Vector3 correctPosition = transform.position;
-		Vector3 newPosition = new Vector3 (transform.position.x, transform.position.y - moveDown, transform.position.z);
-	
-		float time  = 0;
-
-		while(time<1){
-			time += Time.deltaTime*4;
-			transform.position = Vector3.Lerp (correctPosition, newPosition, time);
-			yield return null;
-		}
+		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
+		transform.position = Vector3.Lerp (correctPosition, newPosition, 1);
 	}
+
+//	public IEnumerator MoveDown (){
+//		Vector3 correctPosition = transform.position;
+//		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
+//	
+//		float time  = 0;
+//
+//		while(time<1){
+//			time += Time.deltaTime*4;
+//			transform.position = Vector3.Lerp (correctPosition, newPosition, time);
+//			yield return null;
+//		}
+//	}
 
 	/*public IEnumerator FallDown (){
 		Vector3 newPosition = transform.position;
@@ -68,6 +74,11 @@ public class Sphere : MonoBehaviour {
 			yield return null;
 		}
 	}*/
+
+	public void DestroyBall()
+	{
+		Destroy (gameObject);
+	}
 
 	public IEnumerator DestroyBlock(){
 		
