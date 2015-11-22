@@ -50,18 +50,18 @@ public class Sphere : MonoBehaviour {
 		transform.position = Vector3.Lerp (correctPosition, newPosition, 1);
 	}
 
-//	public IEnumerator MoveDown (){
-//		Vector3 correctPosition = transform.position;
-//		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
-//	
-//		float time  = 0;
-//
-//		while(time<1){
-//			time += Time.deltaTime*4;
-//			transform.position = Vector3.Lerp (correctPosition, newPosition, time);
-//			yield return null;
-//		}
-//	}
+	public IEnumerator MoveDown (){
+		Vector3 correctPosition = transform.position;
+		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
+	
+		float time  = 0;
+
+		while(time<1){
+			time += Time.deltaTime*4;
+			transform.position = Vector3.Lerp (correctPosition, newPosition, time);
+			yield return null;
+		}
+	}
 
 	/*public IEnumerator FallDown (){
 		Vector3 newPosition = transform.position;
