@@ -218,7 +218,7 @@ public class Grid : MonoBehaviour {
 					for (int i=0; i<foundMatchesX; i++){
 						foreach(Sphere s in allS){
 							if (s.x == x+i && s.y ==y){
-								//s.scoreValue = countRight*50;
+								s.scoreValue = countRight*50;
 								s.matched =true;
 								findMatches = true;
 							}
@@ -235,7 +235,7 @@ public class Grid : MonoBehaviour {
 					for (int i=0; i<foundMatchesY; i++){
 						foreach (Sphere s in allS){
 							if (s.x == x && s.y == y+i){
-							//s.scoreValue = countUp*50;
+							s.scoreValue = countUp*50;
 							s.matched =true;
 							findMatches = true;	
 							}
@@ -290,8 +290,8 @@ public class Grid : MonoBehaviour {
 		}
 		foreach (Sphere s in allS){
 			if (s.readyToMove){
-				s.StartCoroutine(s.MoveDown());
-				//s.MoveByY();
+				//s.StartCoroutine(s.MoveDown());
+				s.MoveByY();
 				s.y -= s.moveDown;
 				grid[s.x,s.y] = s.ID;
 				for (int i=0; i< s.moveDown; i++){

@@ -48,6 +48,7 @@ public class Sphere : MonoBehaviour {
 		Vector3 correctPosition = transform.position;
 		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
 		transform.position = Vector3.Lerp (correctPosition, newPosition, 1);
+		ScoreManager.score += scoreValue;
 	}
 
 	public IEnumerator MoveDown (){
