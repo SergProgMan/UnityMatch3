@@ -45,14 +45,14 @@ public class Sphere : MonoBehaviour {
 	}
 
 	public void MoveByY(){
-		Vector3 correctPosition = transform.position;
+		Vector3 correctPosition = new Vector3 (x,y,0);
 		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
 		transform.position = Vector3.Lerp (correctPosition, newPosition, 1);
 		ScoreManager.score += scoreValue;
 	}
 
 	public IEnumerator MoveDown (){
-		Vector3 correctPosition = transform.position;
+		Vector3 correctPosition = new Vector3 (x,y,0);
 		Vector3 newPosition = new Vector3 (correctPosition.x, correctPosition.y - moveDown, correctPosition.z);
 	
 		float time  = 0;
@@ -78,6 +78,7 @@ public class Sphere : MonoBehaviour {
 
 	public void DestroyBall()
 	{
+		ScoreManager.score += scoreValue;
 		Destroy (gameObject);
 	}
 
