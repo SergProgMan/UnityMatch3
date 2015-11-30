@@ -78,6 +78,7 @@ public class Sphere : MonoBehaviour {
 
 	public void DestroyBall()
 	{
+		ScoreManager.score += scoreValue;
 		Destroy (gameObject);
 	}
 
