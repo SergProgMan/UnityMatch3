@@ -169,6 +169,19 @@ public class Grid : MonoBehaviour {
 		sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, 1);
 		mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, 1);
 		  
+<<<<<<< HEAD
+=======
+
+
+	//	float time = 0;
+	//	while (time<1){
+	//		time+=Time.deltaTime;
+	//		sel.transform.position = Vector3.Slerp(selTempPos, movTempPos, time);
+	//		mov.transform.position = Vector3.Slerp(movTempPos, selTempPos, time);
+	//	}
+
+
+>>>>>>> origin/master
 		int tempX = sel.x;
 		int tempY = sel.y;
 
