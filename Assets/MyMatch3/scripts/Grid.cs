@@ -169,19 +169,6 @@ public class Grid : MonoBehaviour {
 		sel.transform.position = Vector3.Lerp(selTempPos, movTempPos, 1);
 		mov.transform.position = Vector3.Lerp(movTempPos, selTempPos, 1);
 		  
-<<<<<<< HEAD
-=======
-
-
-	//	float time = 0;
-	//	while (time<1){
-	//		time+=Time.deltaTime;
-	//		sel.transform.position = Vector3.Slerp(selTempPos, movTempPos, time);
-	//		mov.transform.position = Vector3.Slerp(movTempPos, selTempPos, time);
-	//	}
-
-
->>>>>>> origin/master
 		int tempX = sel.x;
 		int tempY = sel.y;
 
@@ -358,29 +345,96 @@ public class Grid : MonoBehaviour {
 		Debug.Log(str);
 	}
 
-	/*public void LoockForPosibleMatch ()
-	{	
-		TestBoard();
+	void LoockForPosibleMatch ()	{	
 		Sphere[] allb = FindObjectsOfType(typeof(Sphere)) as Sphere[];
-		// horizontal, 2+1
-		for (int y=0; y<= board.GetLength(1); y++)
-		{
-			for (int x=0; x <= board.GetLength(0); x++)
-			{
-				foreach(Sphere b in allb)
-				{
-					if (board[x,y]=board[x+1,y])
-					{
-						if (x>=board.GetLength(0)-2 && board[x,y] == board[x-2,y])
+		for (int y=0; y< grid.GetLength(1); y++){
+			for (int x=0; x < grid.GetLength(0); x++){
+					if (grid[x,y]==grid[x+1,y])// horizontal, 2+1
+					{	
+						if (checkIfInArrayAndId(x-1,y+1,grid[x,y]))	//left up
 						{
-
+							
 						}
-				}
+						if (checkIfInArrayAndId(x-2,y,grid[x,y]))	//left left
+						{
+							
+						}
+						if (checkIfInArrayAndId(x-1,y-1,grid[x,y]))	//left down
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+2,y+1,grid[x,y]))	//right up
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+3,y,grid[x,y]))	//right right
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+2,y+1,grid[x,y]))	//right down
+						{
+							
+						}
+					}
+					if (grid[x,y]==grid[x+2,y])//horizontal, middle
+					{
+						if (checkIfInArrayAndId(x+1,y+1,grid[x,y]))	//up
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+1,y-1,grid[x,y]))	//down
+						{
+							
+						}
+					}
+					if()	//vertical, 2+1
+					{
+						if (checkIfInArrayAndId(x-1,y+1,grid[x,y]))	//up left
+						{
+							
+						}
+						if (checkIfInArrayAndId(x,y+2,grid[x,y]))	//up up
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+1,y+1,grid[x,y]))	//up right
+						{
+							
+						}
+						if (checkIfInArrayAndId(x-1,y-2,grid[x,y]))		//down left
+						{
+							
+						}
+						if (checkIfInArrayAndId(x,y-3,grid[x,y]))		//down down
+						{
+							
+						}
+						if (checkIfInArrayAndId(x+1,y-2,grid[x,y]))		//down right
+						{
+							
+						}
+					}
+					if()
+					{
+						if (checkIfInArrayAndId(x,y,grid[x,y]))		//
+						{
+							
+						}
+						if (checkIfInArrayAndId(x,y,grid[x,y]))		//
+						{
+							
+						}
+					}
 			}
 		}
-
-		}
-	}*/
+	}
+	
+	bool checkIfInArrayAndId(int x,y,iD){ 
+		if(x<grid.Gength(0) && x>=0 && y<grid.Gength(1) && y>=0 && grid[x,y]==iD){
+			return true;
+		}	
+		return false;
+	}
 
 }
 	
