@@ -7,7 +7,8 @@ public class Grid : MonoBehaviour {
 	public static int w = 10;
 	
 	public int [,] grid = new int [w,h];
-
+	public int [,] canMatchGrid = new int [w,h];
+	
 	public Transform ball;
 	
 	private bool findMatches = false;
@@ -346,94 +347,50 @@ public class Grid : MonoBehaviour {
 	}
 
 	void LoockForPosibleMatch ()	{	
-		Sphere[] allb = FindObjectsOfType(typeof(Sphere)) as Sphere[];
 		for (int y=0; y< grid.GetLength(1); y++){
 			for (int x=0; x < grid.GetLength(0); x++){
 					if (grid[x,y]==grid[x+1,y])// horizontal, 2+1
 					{	
-						if (checkIfInArrayAndId(x-1,y+1,grid[x,y]))	//left up
-						{
-							
-						}
-						if (checkIfInArrayAndId(x-2,y,grid[x,y]))	//left left
-						{
-							
-						}
-						if (checkIfInArrayAndId(x-1,y-1,grid[x,y]))	//left down
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+2,y+1,grid[x,y]))	//right up
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+3,y,grid[x,y]))	//right right
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+2,y+1,grid[x,y]))	//right down
-						{
-							
-						}
+						CheckIfInArrayAndId(x-1,y+1,grid[x,y]);	//left up
+						CheckIfInArrayAndId(x-2,y,grid[x,y]);	//left left
+						CheckIfInArrayAndId(x-1,y-1,grid[x,y]);	//left down
+						CheckIfInArrayAndId(x+2,y+1,grid[x,y]);	//right up
+						CheckIfInArrayAndId(x+3,y,grid[x,y]);	//right right
+						CheckIfInArrayAndId(x+2,y+1,grid[x,y]);	//right down
 					}
 					if (grid[x,y]==grid[x+2,y])//horizontal, middle
 					{
-						if (checkIfInArrayAndId(x+1,y+1,grid[x,y]))	//up
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+1,y-1,grid[x,y]))	//down
-						{
-							
-						}
+						CheckIfInArrayAndId(x+1,y+1,grid[x,y]);	//up
+						CheckIfInArrayAndId(x+1,y-1,grid[x,y]);	//down
 					}
-					if()	//vertical, 2+1
+					if(grid[x,y]==grid[x,y+1])	//vertical, 2+1
 					{
-						if (checkIfInArrayAndId(x-1,y+1,grid[x,y]))	//up left
-						{
-							
-						}
-						if (checkIfInArrayAndId(x,y+2,grid[x,y]))	//up up
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+1,y+1,grid[x,y]))	//up right
-						{
-							
-						}
-						if (checkIfInArrayAndId(x-1,y-2,grid[x,y]))		//down left
-						{
-							
-						}
-						if (checkIfInArrayAndId(x,y-3,grid[x,y]))		//down down
-						{
-							
-						}
-						if (checkIfInArrayAndId(x+1,y-2,grid[x,y]))		//down right
-						{
-							
-						}
+						CheckIfInArrayAndId(x-1,y+2,grid[x,y]);	//up left
+						CheckIfInArrayAndId(x,y+3,grid[x,y]);	//up up
+						CheckIfInArrayAndId(x+1,y+2,grid[x,y]);	//up right
+						CheckIfInArrayAndId(x-1,y-1,grid[x,y]);	//down left
+						CheckIfInArrayAndId(x,y-2,grid[x,y]);		//down down
+						CheckIfInArrayAndId(x+1,y-1,grid[x,y]);		//down right
 					}
-					if()
+					if(grid[x,y]==grid[x,y+2])	//vertical, middle
 					{
-						if (checkIfInArrayAndId(x,y,grid[x,y]))		//
-						{
-							
-						}
-						if (checkIfInArrayAndId(x,y,grid[x,y]))		//
-						{
-							
-						}
+						CheckIfInArrayAndId(x-1,y,grid[x,y]);		//left
+						CheckIfInArrayAndId(x+1,y,grid[x,y]);		//right
 					}
 			}
 		}
+		if(!canMatch){
+			GameOver();
+		}
 	}
 	
-	bool checkIfInArrayAndId(int x,y,iD){ 
+	void CheckIfInArrayAndId(int x,y,iD){ 
 		if(x<grid.Gength(0) && x>=0 && y<grid.Gength(1) && y>=0 && grid[x,y]==iD){
-			return true;
+			{
+					canMatch=true;
+					canMatchGrid [x,y]=1;
+			}
 		}	
-		return false;
 	}
 
 }
