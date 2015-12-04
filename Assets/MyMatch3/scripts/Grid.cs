@@ -21,9 +21,7 @@ public class Grid : MonoBehaviour {
 		CheckMatches,
 		DeleteMatched,
 		MoveDown,
-		Respawn,
-		
-		Debugging //for debugging
+		Respawn
 	};
 
 	 static Color[] Colors = new Color[]{
@@ -82,14 +80,13 @@ public class Grid : MonoBehaviour {
 	void SwitchState (State nextState){
 		//activeState = nextState;
 	
-		Debugging(nextState);
+		Invvoke(Debugging(nextState),0.5);
 	}
 	
 	void Debugging(State nextState){
 		Debug.Log("activeState " +activeState);
 		Debug.Log("nextState " +nextState);
 		PrintField();
-		//Debug.Break();
 		activeState = nextState;
 	}
 	
@@ -113,7 +110,15 @@ public class Grid : MonoBehaviour {
 				b.ID = randomColor;
 			}
 		}
-		SwitchState(State.Select);
+		LoockForPosibleMatch();
+		if(canMatch)
+		{
+		SwitchState(State.Select);	
+		}
+		if(!canMatch)
+		{
+			GenerateGrid();
+		}
 	}
 
 	bool MatchesOnSpawn (int x, int y, int randomColor) //check matching on spawn
@@ -249,7 +254,10 @@ public class Grid : MonoBehaviour {
 		else if (!swapEffect){
 			Sphere.select = null;
 			Sphere.moveTo = null;
+			LoockForPosibleMatch();
+			if(canMatch){
 			SwitchState(State.Select);
+			}
 		}
 	}
 
@@ -380,7 +388,7 @@ public class Grid : MonoBehaviour {
 			}
 		}
 		if(!canMatch){
-			GameOver();
+			SwitchState(State.GameOver);
 		}
 	}
 	
@@ -393,5 +401,9 @@ public class Grid : MonoBehaviour {
 		}	
 	}
 
+	void GameOver()
+	{
+		
+	}
 }
 	
