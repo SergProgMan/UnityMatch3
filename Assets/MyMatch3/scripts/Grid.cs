@@ -3,14 +3,15 @@ using System.Collections;
 
 public class Grid : MonoBehaviour {
 	
-	public static int h = 12;
+	public static int h = 14;
 	public static int w = 10;
 	
 	public int [,] grid = new int [w,h];
 	public int [,] canMatchGrid = new int [w,h];
 	
 	public Transform ball;
-	
+
+	private bool canMatch = false;
 	private bool findMatches = false;
 	private bool swapEffect = false; // need to be add to Swap fuction!!!
 
@@ -21,7 +22,8 @@ public class Grid : MonoBehaviour {
 		CheckMatches,
 		DeleteMatched,
 		MoveDown,
-		Respawn
+		Respawn,
+		GameOver
 	};
 
 	 static Color[] Colors = new Color[]{
@@ -74,13 +76,16 @@ public class Grid : MonoBehaviour {
 			Respawn();
 			break;
 
+			case State.GameOver:
+			GameOver();
+			break;
 		}
 	}
 	
 	void SwitchState (State nextState){
 		//activeState = nextState;
 	
-		Invvoke(Debugging(nextState),0.5);
+		Debugging(nextState);
 	}
 	
 	void Debugging(State nextState){
@@ -357,8 +362,10 @@ public class Grid : MonoBehaviour {
 	void LoockForPosibleMatch ()	{	
 		for (int y=0; y< grid.GetLength(1); y++){
 			for (int x=0; x < grid.GetLength(0); x++){
-					if (grid[x,y]==grid[x+1,y])// horizontal, 2+1
+					if (x+1 < grid.GetLength(0))// horizontal, 2+1
 					{	
+					if(grid[x,y]==grid[x+1,y])
+					{
 						CheckIfInArrayAndId(x-1,y+1,grid[x,y]);	//left up
 						CheckIfInArrayAndId(x-2,y,grid[x,y]);	//left left
 						CheckIfInArrayAndId(x-1,y-1,grid[x,y]);	//left down
@@ -366,25 +373,38 @@ public class Grid : MonoBehaviour {
 						CheckIfInArrayAndId(x+3,y,grid[x,y]);	//right right
 						CheckIfInArrayAndId(x+2,y+1,grid[x,y]);	//right down
 					}
-					if (grid[x,y]==grid[x+2,y])//horizontal, middle
+			}
+
+					if (x+2 < grid.GetLength(0))//horizontal, middle
+					{
+					if (grid[x,y]==grid[x+2,y])
 					{
 						CheckIfInArrayAndId(x+1,y+1,grid[x,y]);	//up
 						CheckIfInArrayAndId(x+1,y-1,grid[x,y]);	//down
 					}
-					if(grid[x,y]==grid[x,y+1])	//vertical, 2+1
+					}
+
+				if(y+1 < grid.GetLength(1))	//vertical, 2+1
+					{
+					if(grid[x,y]==grid[x,y+1])
 					{
 						CheckIfInArrayAndId(x-1,y+2,grid[x,y]);	//up left
 						CheckIfInArrayAndId(x,y+3,grid[x,y]);	//up up
 						CheckIfInArrayAndId(x+1,y+2,grid[x,y]);	//up right
 						CheckIfInArrayAndId(x-1,y-1,grid[x,y]);	//down left
-						CheckIfInArrayAndId(x,y-2,grid[x,y]);		//down down
-						CheckIfInArrayAndId(x+1,y-1,grid[x,y]);		//down right
+						CheckIfInArrayAndId(x,y-2,grid[x,y]);	//down down
+						CheckIfInArrayAndId(x+1,y-1,grid[x,y]);	//down right
 					}
-					if(grid[x,y]==grid[x,y+2])	//vertical, middle
+				}
+
+				if(y+2 < grid.GetLength(1))	//vertical, middle
 					{
-						CheckIfInArrayAndId(x-1,y,grid[x,y]);		//left
-						CheckIfInArrayAndId(x+1,y,grid[x,y]);		//right
+					if(grid[x,y]==grid[x,y+2])
+					{
+						CheckIfInArrayAndId(x-1,y,grid[x,y]);	//left
+						CheckIfInArrayAndId(x+1,y,grid[x,y]);	//right
 					}
+				}
 			}
 		}
 		if(!canMatch){
@@ -392,8 +412,8 @@ public class Grid : MonoBehaviour {
 		}
 	}
 	
-	void CheckIfInArrayAndId(int x,y,iD){ 
-		if(x<grid.Gength(0) && x>=0 && y<grid.Gength(1) && y>=0 && grid[x,y]==iD){
+	void CheckIfInArrayAndId(int x,int y, int iD){ 
+		if(x<grid.GetLength(0) && x>=0 && y<grid.GetLength(1) && y>=0 && grid[x,y]==iD){
 			{
 					canMatch=true;
 					canMatchGrid [x,y]=1;
