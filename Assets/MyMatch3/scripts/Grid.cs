@@ -92,6 +92,9 @@ public class Grid : MonoBehaviour {
 		Debug.Log("activeState " +activeState);
 		Debug.Log("nextState " +nextState);
 		PrintField();
+		PrintMatchedBalls();
+		CheckBoard();
+
 		activeState = nextState;
 	}
 	
@@ -292,6 +295,7 @@ public class Grid : MonoBehaviour {
 				}
 			}
 		}
+		PrintMoveDown();
 		foreach (Sphere s in allS){
 			if (s.readyToMove){
 				//s.StartCoroutine(s.MoveDown());
@@ -357,6 +361,65 @@ public class Grid : MonoBehaviour {
 			str += "\n";
 		}
 		Debug.Log(str);
+	}
+
+	void PrintMatchedBalls()
+	{
+		Debug.Log("<color=green> PrintMatchedBalls</color>");
+		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
+		string str = "";
+
+		for(int x=0; x<grid.GetLength(0); x++){
+			for(int y=0; y<grid.GetLength(1); y++){
+				foreach (Sphere s in allS){
+					if (s.x == x && s.y == y && s.matched){
+						str += "1 ";
+					}
+					if (s.x == x && s.y == y && !s.matched){
+						str += "0 ";
+					}
+				}
+			}
+			str += "\n";
+		
+	}
+		Debug.Log(str);
+	}
+		void PrintMoveDown()
+		{
+		Debug.Log("<color=green> PrintMoveDown</color>");
+			Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
+			string str = "";
+
+			for(int x=0; x<grid.GetLength(0); x++){
+				for(int y=0; y<grid.GetLength(1); y++){
+					foreach (Sphere s in allS){
+						if (s.x == x && s.y == y){
+						str += " " +s.moveDown;
+						}
+					}
+				}
+				str += "\n";
+				
+			}
+		Debug.Log(str);
+	}
+
+	void CheckBoard()
+	{
+		Debug.Log("<color=green> CheckBoard</color>");
+		Sphere [] allS = FindObjectsOfType(typeof(Sphere))as Sphere[];
+		for(int x=0; x<grid.GetLength(0); x++){
+			for(int y=0; y<grid.GetLength(1); y++){
+				foreach (Sphere s in allS){
+					if (s.x == x && s.y == y){
+						if(grid[x,y]!= s.ID && grid[x,y]!=777){
+							Debug.Log("<color=red> Grid</color>"+x+" "+y+ "=" +grid[x,y]+"but Sphere"+s.ID);							
+						}
+					}
+				}
+			}
+		}
 	}
 
 	void LoockForPosibleMatch ()	{	
