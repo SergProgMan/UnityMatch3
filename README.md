@@ -1,2 +1,0 @@
-# UnityMatch3
-MyFirstGame
